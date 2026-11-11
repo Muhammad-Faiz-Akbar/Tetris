@@ -4,11 +4,11 @@ A classic Tetris game built in Python using the Pygame library. Features smooth 
 
 ## 🎮 Controls
 
-* **Left / Right Arrows:** Move piece horizontally
-* **Down Arrow:** Soft drop
-* **Up Arrow:** Rotate piece clockwise
-* **Spacebar:** Hard drop
-* **R Key:** Restart (when Game Over)
+- **Left / Right Arrows:** Move piece horizontally
+- **Down Arrow:** Soft drop
+- **Up Arrow:** Rotate piece clockwise
+- **Spacebar:** Hard drop
+- **R Key:** Restart (when Game Over)
 
 ## 🚀 How to Run
 

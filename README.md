@@ -1,5 +1,5 @@
 # 🧱 Python Tetris
-This is My first game btw
+This is My first game btw :v
 
 A polished desktop Tetris built with Pygame, designed to run natively on
 Linux (tested on CachyOS / Arch).

@@ -1,0 +1,8 @@
+# Local runtime data
+high_score.json
+high_score.json.tmp
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/

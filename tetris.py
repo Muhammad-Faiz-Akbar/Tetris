@@ -22,6 +22,7 @@ from __future__ import annotations
 import json
 import os
 import random
+import sys
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
@@ -220,7 +221,42 @@ def make_background(size) -> pygame.Surface:
 # ---------------------------------------------------------------------------
 
 MAX_SCORES = 5
-DEFAULT_HIGH_SCORE_FILE = Path(__file__).resolve().with_name("high_score.json")
+
+
+def is_frozen() -> bool:
+    """True when running from a PyInstaller bundle rather than source."""
+    return bool(getattr(sys, "frozen", False))
+
+
+def resource_path(relative: str) -> Path:
+    """Locate bundled read-only data in both source and frozen builds.
+
+    PyInstaller unpacks data to a temporary directory stored in ``sys._MEIPASS``.
+    """
+    base = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
+    return base / relative
+
+
+def user_data_dir() -> Path:
+    """Writable per-user directory for saves (never inside the bundle)."""
+    override = os.environ.get("XDG_DATA_HOME")
+    base = Path(override) if override else Path.home() / ".local" / "share"
+    return base / "tetris"
+
+
+def default_high_score_path() -> Path:
+    """Where scores live.
+
+    A frozen executable runs from a directory that is deleted on exit, so its
+    saves must go to the user's data directory. Running from source keeps the
+    historical behaviour of a file next to the script.
+    """
+    if is_frozen():
+        return user_data_dir() / "high_score.json"
+    return Path(__file__).resolve().with_name("high_score.json")
+
+
+DEFAULT_HIGH_SCORE_FILE = default_high_score_path()
 
 
 class HighScoreStore:
@@ -314,6 +350,9 @@ class HighScoreStore:
         }
         temp_path = self.path.with_name(self.path.name + ".tmp")
         try:
+            # A frozen build writes into ~/.local/share/tetris, which may not
+            # exist yet on a first run.
+            self.path.parent.mkdir(parents=True, exist_ok=True)
             with temp_path.open("w", encoding="utf-8") as handle:
                 json.dump(payload, handle, indent=2)
                 handle.write("\n")
@@ -506,6 +545,7 @@ class TetrisGame:
         pygame.init()
         pygame.display.set_caption(CAPTION)
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        self._apply_window_icon()
         self.clock = pygame.time.Clock()
         self.background = make_background((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.high_scores = HighScoreStore(high_score_path)
@@ -536,6 +576,14 @@ class TetrisGame:
         self.pause_buttons = self._build_pause_buttons()
         self.game_over_buttons = self._build_game_over_buttons()
         self.high_score_buttons = self._build_high_score_buttons()
+
+    def _apply_window_icon(self) -> None:
+        """Set the taskbar/window icon; purely cosmetic, so failures are ignored."""
+        try:
+            icon = pygame.image.load(str(resource_path("icon.png")))
+        except (pygame.error, OSError):
+            return
+        pygame.display.set_icon(icon)
 
     # -- button construction ----------------------------------------------
     def _build_menu_buttons(self) -> list[Button]:

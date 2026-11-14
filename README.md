@@ -18,6 +18,30 @@ Linux (tested on CachyOS / Arch).
 - **Clean visuals:** gradient background, rounded blocks, grid borders,
   monospaced score readouts and a well-aligned sidebar layout.
 
+## 📦 Download (prebuilt binary)
+
+Every tagged release ships ready-to-run assets:
+
+| Asset | What it is |
+| --- | --- |
+| `tetris-<version>-linux-x86_64` | Standalone executable — **no Python or Pygame required** |
+| `tetris-<version>-source.zip` | Sources + launcher + installer + icon |
+| `SHA256SUMS.txt` | Checksums to verify your download |
+
+```bash
+chmod +x tetris-*-linux-x86_64
+./tetris-*-linux-x86_64
+```
+
+The frozen build keeps its high scores in
+`~/.local/share/tetris/high_score.json` (respects `XDG_DATA_HOME`), because a
+one-file bundle runs from a temporary directory that is deleted on exit.
+Running from source still writes `high_score.json` next to the script.
+
+> **Note:** the binary is built for `x86_64` Linux and links against the glibc
+> of the build machine (CachyOS/Arch, glibc 2.42). It runs on equally recent
+> distros; on older ones, use the source archive instead.
+
 ## 🚀 Setup
 
 ```bash
@@ -80,6 +104,7 @@ rm ~/.local/share/applications/tetris.desktop
 | `tetris.py` | The game (single modular file) |
 | `tetris` | Launcher script — `./tetris` |
 | `install-desktop.sh` | Adds a menu entry + icon to your desktop |
+| `build-release.sh` | Builds the release binary + source archive into `dist/` |
 | `icon.png` | Application icon (256×256) |
 | `requirements.txt` | Pygame dependency |
 
@@ -91,3 +116,16 @@ rm ~/.local/share/applications/tetris.desktop
 - `Tetromino` / `Board` — game model
 - `Button` — reusable hover-aware widget
 - `TetrisGame` — state machine, input, update and rendering
+
+## 🔧 Building a release
+
+```bash
+./build-release.sh v1.0.0     # or with no argument to use `git describe`
+```
+
+This freezes a standalone executable with PyInstaller, zips the sources and
+writes `SHA256SUMS.txt` into `dist/`. To publish it:
+
+```bash
+gh release create v1.0.0 dist/* --title "Tetris v1.0.0" --generate-notes
+```

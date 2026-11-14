@@ -6,3 +6,8 @@ high_score.json.tmp
 __pycache__/
 *.py[cod]
 .venv/
+
+# Release build output
+build/
+dist/
+*.spec

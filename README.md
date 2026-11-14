@@ -31,6 +31,31 @@ python tetris.py
 Requires Python 3.10+ and Pygame 2.5+. On CachyOS/Arch you can also use the
 system package instead of a venv: `sudo pacman -S python-pygame`.
 
+## 🖱 Running it like a real app
+
+The repo ships a `tetris` launcher (a self-locating shell script) so you don't
+need to activate a virtualenv or remember paths:
+
+```bash
+./tetris                # from the project folder
+```
+
+It prefers `.venv/bin/python` when present and otherwise falls back to system
+`python3`, and prints install instructions if Pygame is missing.
+
+To add a **Tetris** entry with an icon to your CachyOS application menu:
+
+```bash
+./install-desktop.sh
+```
+
+That writes `~/.local/share/applications/tetris.desktop` plus the icon into the
+hicolor theme (no `sudo` needed). Remove it later with:
+
+```bash
+rm ~/.local/share/applications/tetris.desktop
+```
+
 ## 🎮 Controls
 
 | Action | Keys |
@@ -49,6 +74,14 @@ system package instead of a venv: `sudo pacman -S python-pygame`.
 ![Tetris Gameplay](tetris.gif)
 
 ## 🗂 Project layout
+
+| File | Purpose |
+| --- | --- |
+| `tetris.py` | The game (single modular file) |
+| `tetris` | Launcher script — `./tetris` |
+| `install-desktop.sh` | Adds a menu entry + icon to your desktop |
+| `icon.png` | Application icon (256×256) |
+| `requirements.txt` | Pygame dependency |
 
 `tetris.py` is intentionally a single, modular file:
 
